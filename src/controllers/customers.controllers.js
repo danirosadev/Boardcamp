@@ -49,9 +49,9 @@ export async function updateCustomer (req, res){
     try {
         if (body.phone.length < 10 || body.phone.length > 11 || body.cpf.length != 11) return res.status(400).send("Dados inválidos.")
 
-        const isCpf = await db.query(`SELECT * FROM customers WHERE cpf = '${newCustomer.cpf}'`)
+        const isCpf = await db.query(`SELECT * FROM customers WHERE cpf = '${body.cpf}'`)
         if (isCpf.rowCount > 0) return res.sendStatus(409)
-        
+
         await db.query(`UPDATE customers SET name = '${body.name}', phone = '${body.phone}', cpf = '${body.cpf}', birthday = '${body.birthday}' WHERE id = ${id}`)
         res.status(200).send("Cliente atualizado.")
     } catch (error) {
