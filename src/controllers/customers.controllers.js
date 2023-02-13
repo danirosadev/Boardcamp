@@ -36,7 +36,7 @@ export async function postNewCustomer (req, res){
         if (isCpf.rowCount > 0) return res.sendStatus(409)
 
         await db.query(`INSERT INTO customers (name, phone, cpf, birthday) VALUES ('${newCustomer.name}', '${newCustomer.phone}', '${newCustomer.cpf}', '${newCustomer.birthday}')`)
-        res.status(201).send("Cliente cadastrado.")
+        res.sendStatus(201)
     } catch (error) {
         return res.status(500).send(error.message)
     }
@@ -53,7 +53,7 @@ export async function updateCustomer (req, res){
         if (isCpf.rowCount[0] > 0) return res.sendStatus(409)
 
         await db.query(`UPDATE customers SET name = '${body.name}', phone = '${body.phone}', cpf = '${body.cpf}', birthday = '${body.birthday}' WHERE id = ${id}`)
-        res.status(200).send("Cliente atualizado.")
+        res.sendStatus(200)
     } catch (error) {
         return res.status(500).send(error.message)
     }

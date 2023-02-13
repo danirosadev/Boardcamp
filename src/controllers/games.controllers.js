@@ -26,7 +26,7 @@ export async function postNewGame(req, res){
         if (isGame.rowCount) return res.status(409).send("Este jogo já está cadastrado.")
 
         await db.query(`INSERT INTO games (name, image, "stockTotal", "pricePerDay") VALUES ('${newGame.name}', '${newGame.image}', '${newGame.stockTotal}', '${newGame.pricePerDay}')`)
-        res.status(201).send("Jogo cadastrado.")
+        res.sendStatus(201)
     } catch (error) {
         res.status(500).send(error.message)
     }

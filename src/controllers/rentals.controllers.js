@@ -44,7 +44,7 @@ export async function postNewRental (req, res){
         const originalPrice = Number(newRental.daysRented) * Number(isGame.rows[0].pricePerDay)
 
         await db.query(`INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee") VALUES ('${newRental.customerId}', '${newRental.gameId}', '${rentDate}', '${newRental.daysRented}', null, '${originalPrice}', null)`)
-        res.status(201).send("Novo aluguel inserido.")
+        res.sendStatus(201)
     } catch (error) {
         return res.status(500).send(error.message)
     }
@@ -66,7 +66,7 @@ export async function endRental (req, res){
             ELSE NULL
             END
             WHERE id = ${id} AND "returnDate" IS NULL`)
-        res.status(200).send("Jogo devolvido")
+        res.sendStatus(200)
     } catch (error) {
         return res.status(500).send(error.message)
     }
@@ -77,7 +77,7 @@ export async function deleteRental (req, res){
 
     try {
         await db.query(`DELETE FROM rentals WHERE id = ${id}`)
-        res.status(200).send("Jogo deletado.")
+        res.sendStatus(200)
     } catch (error) {
         return res.status(500).send(error.message)
     }
