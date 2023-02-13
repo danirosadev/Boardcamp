@@ -40,8 +40,8 @@ export async function postNewRental (req, res){
             return res.sendStatus(400);
         }
 
-        const rentDate = dayjs().format('DD/MM/YYYY');
-        const originalPrice = Number(newRental.daysRented) * Number(isGame.rows[0].pricePerDay);
+        const rentDate = dayjs().format('DD/MM/YYYY')
+        const originalPrice = Number(newRental.daysRented) * Number(isGame.rows[0].pricePerDay)
 
         await db.query(`INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee") VALUES ('${newRental.customerId}', '${newRental.gameId}', '${rentDate}', '${newRental.daysRented}', null, '${originalPrice}', null)`)
         res.status(201).send("Novo aluguel inserido.")
@@ -58,7 +58,14 @@ export async function endRental (req, res){
         const isRental = await db.query(`SELECT * FROM rentals WHERE id = ${id}`)
         if(isRental.rows.length === 0) return res.sendStatus(404)
 
-        await db.query(`UPDATE rentals SET "returnDate" = date_trunc('day', now()) WHERE id = ${id}`)
+        if(isRental.rows[0].returnDate !== null) return res.sendStatus(400)
+
+        await db.query(`UPDATE rentals SET "returnDate" = NOW(), "delayFee" = CASE 
+            WHEN EXTRACT (DAY FROM age(NOW(), "rentDate")) > "daysRented"
+            THEN ("originalPrice" / "daysRented") * (EXTRACT(DAY FROM age(NOW(), "rentDate")) - "daysRented")
+            ELSE NULL
+            END
+            WHERE id = ${id} AND "returnDate" IS NULL`)
         res.status(200).send("Jogo devolvido")
     } catch (error) {
         return res.status(500).send(error.message)
